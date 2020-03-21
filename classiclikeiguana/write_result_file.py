@@ -2,7 +2,7 @@ import csv
 import json
 import os
 from datetime import datetime
-from random import random
+import random
 from typing import List
 
 from classiclikeiguana.QueryStatistics import QueryStatistics
