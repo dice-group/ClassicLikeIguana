@@ -5,9 +5,9 @@ def parse_arguments() -> str:
     parser = argparse.ArgumentParser(description='An IGUANA spin-off for benchmarking fast commandline interfaces.')
     parser.add_argument('configfile', metavar='config file', type=str, nargs='?',
                         help='A yaml file providing the configuration for the benchmark.')
+    parser.add_argument('--debug', action='store_true', help='If enabled, full output is written to the terminal.')
 
     args = parser.parse_args()
-
     if args.configfile is None:
         print("Please provide the path to a config file as commandline argument.")
         if not os.path.exists('config.yaml'):
@@ -20,13 +20,17 @@ triplestore: rdf3x
 command: ./rdf3xembedded swdfdb
 # line start that indicates that the triple store is ready to receive queries 
 initFinished: RDF-3X protocol 1 
-# line start that indicates a success
-queryFinished: \\.
-# line starts that indicate a failure
+# line starts that indicates the the query serialization is done
+queryTerminals: 
+- \\.
+- failure
+- parse error
+- internal error
+# line starts that indicate that the current query failed. This does not terminate reading lines for this query.
 queryError:
 - failure
-- 'parse error:'
-- internal error plan generation failed
+- parse error
+- internal error
 # name of the dataset
 dataset: swdf
 # a file that contains a query in each line
@@ -40,4 +44,4 @@ timelimit: 360000
 
             print("A config file template 'config.yaml' was generated at {}.".format(os.getcwd()))
         exit(0)
-    return str(args.configfile)
+    return str(args.configfile), args.debug

@@ -1,17 +1,48 @@
-import csv
+import atexit
 import json
 import os
-from datetime import datetime
 import random
+from csv import DictWriter
+from datetime import datetime
 from typing import List
 
 from classiclikeiguana.QueryStatistics import QueryStatistics
+from classiclikeiguana.read_stdout_until import ExecutionMetrics
+
+
+def generate_benchmarkID() -> str:
+    return str(random.randint(0, int(pow(10, 15))))
+
+
+def open_errorfile(cli_config, start_datetime) -> DictWriter:
+    error_file = open(get_output_filename(cli_config, start_datetime) + "_errors.csv", 'w')
+    atexit.register(lambda: error_file.close())
+    error_writer = DictWriter(error_file, fieldnames=["queryID", "errortime", "errorline"])
+
+    error_writer.writeheader()
+    return error_writer
+
+
+def write_error_line(queryID: int, error_file: DictWriter, execution_metrics: ExecutionMetrics, passed_time: float):
+    for errorline in execution_metrics.error:
+        error_file.writerow({
+            "queryID": queryID,
+            "errortime": passed_time,
+            "errorline": errorline.rstrip()
+        })
+
+
+def get_output_filename(cli_config, start_datetime):
+    outputfile: str = "CLI_{}_{:02d}-clients_{}_{}".format(cli_config["dataset"], 1, cli_config["triplestore"],
+                                                           start_datetime.strftime("%Y-%m-%d_%H-%M-%S"))
+    return outputfile
 
 
 def write_result_file(execution_results: List[QueryStatistics], cli_config: dict, start_datetime: datetime):
-    outputfile: str = "CLI_{}_{:02d}-clients_{}_{}".format(cli_config["dataset"], 1, cli_config["triplestore"],
-                                                           start_datetime.strftime("%Y-%m-%d_%H-%M-%S"))
-    benchmarkID = str(random.randint(0, int(pow(10, 15))))
+    outputfile = get_output_filename(cli_config, start_datetime)
+
+    benchmarkID: str = generate_benchmarkID()
+
     with open(os.path.join(outputfile + ".json"), "w") as jsonfile:
         jsonfile.write(json.dumps({'benchmarkID': benchmarkID,
                                    'starttime': str(start_datetime),
@@ -29,8 +60,8 @@ def write_result_file(execution_results: List[QueryStatistics], cli_config: dict
                   "penalizedtime"]
     output_csv = outputfile + ".csv"
     with open(output_csv, 'w') as csvfile:
-        csvwriter = csv.DictWriter(csvfile,
-                                   fieldnames=fieldnames)
+        csvwriter = DictWriter(csvfile,
+                               fieldnames=fieldnames)
         csvwriter.writeheader()
         for query_statistics in execution_results:
             csvwriter.writerow({
