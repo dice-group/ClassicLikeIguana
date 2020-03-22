@@ -21,7 +21,7 @@ command: ./rdf3xembedded swdfdb
 # line start that indicates that the triple store is ready to receive queries 
 initFinished: RDF-3X protocol 1 
 # line starts that indicates the the query serialization is done
-queryTerminals: 
+queryFinished: 
 - \\.
 - failure
 - parse error
