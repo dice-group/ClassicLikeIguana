@@ -79,4 +79,4 @@ class QueryStatistics:
 
     @property
     def qps(self):
-        return self.succeeded / self.totaltime
+        return self.succeeded / self.totaltime if self.succeeded > 0 else 0
