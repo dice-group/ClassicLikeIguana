@@ -37,6 +37,7 @@ def execute(cli_config: dict, debug: bool = False) -> object:
                                stdout=subprocess.PIPE,
                                stdin=subprocess.PIPE,
                                stderr=subprocess.STDOUT,
+                               errors='replace',
                                universal_newlines=True)
         startup: ExecutionMetrics = read_stdout_until(process, initFinished, [], 0)
         assert startup.succeeded
