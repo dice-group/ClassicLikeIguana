@@ -1,4 +1,4 @@
-# ClassicLatentIguana (CLI)
+# ClassicLikeIguana (CLI)
 
 Benchmarking tool for SPARQL triple stores with an interactive commandline interface. 
 
@@ -11,7 +11,7 @@ The output format is compatible with [IguanaResult2CSV](https://github.com/dice-
 2. clone & change dir:
     ```shell script
     git clone https://github.com/dice-group/ClassicLatentIguana
-    cd ClassicLucidIguana
+    cd ClassicLikeIguana
     ```
 
 ## Run
